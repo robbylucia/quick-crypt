@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Quick Crypt!</title>
+  </head>
+  <body class="dark-bg">        
+        <div class="crypt-wrapper d-flex flex-row justify-content-center align-items-center">            
+            <form>
+                <h1>Quick Crypt</h1>
+                <div class="form-group">
+                    <label for="msg">msg</label>
+                    <input type="text" class="form-control" id="msg" aria-describedby="msgHelp" placeholder="your msg here">
+                    <small id="msgHelp" class="form-text text-muted">what msg do you want to encrypt/decrypt?</small>
+                </div>
+                <div class="form-group">
+                    <label for="passphrase">passphrase</label>
+                    <input type="password" class="form-control" id="passphrase" placeholder="your extra secret passphrase">
+                </div>
+                <button type="submit" class="btn btn-primary encrypt-button action">Encrypt</button>
+                <button type="submit" class="btn btn-primary decrypt-button action">Decrypt</button>
+                <div>
+                    <textarea id="result" value="result"></textarea>
+                </div>                
+                <button type="submit" class="btn btn-primary copy-button">Copy</button>                
+            </form>
+        </div>
+  </body>
+</html>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css?family=Press+Start+2P|Roboto+Mono" rel="stylesheet">
+<style>
+    .crypt-wrapper {
+        padding-top: 2em;
+    }
+    
+    body {        
+        font-family: 'Roboto Mono', monospace;
+        color: white;       
+    }
+    
+    .dark-bg {
+        background: #0F2027; /* fallback for old browsers */
+        background: -webkit-linear-gradient(to right, #2C5364, #203A43, #0F2027); /* Chrome 10-25, Safari 5.1-6 */
+        background: linear-gradient(to right, #2C5364, #203A43, #0F2027); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera
+        12+, Safari 7+ */
+    }
+    
+    .red-bg {
+        background: #c31432; /* fallback for old browsers */
+        background: -webkit-linear-gradient(to right, #240b36, #c31432); /* Chrome 10-25, Safari 5.1-6 */
+        background: linear-gradient(to right, #240b36, #c31432); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+,
+        Safari 7+ */
+    }
+    
+    .blue-bg {
+        background: #000428; /* fallback for old browsers */
+        background: -webkit-linear-gradient(to right, #004e92, #000428); /* Chrome 10-25, Safari 5.1-6 */
+        background: linear-gradient(to right, #004e92, #000428); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+,
+        Safari 7+ */
+    }
+    
+    .wow-bg {
+        background: #FDC830; /* fallback for old browsers */
+        background: -webkit-linear-gradient(to right, #F37335, #FDC830); /* Chrome 10-25, Safari 5.1-6 */
+        background: linear-gradient(to right, #F37335, #FDC830); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+,
+        Safari 7+ */
+    }
+    
+    h1 {
+        font-family: 'Press Start 2P', cursive;
+    }
+    
+    #result {
+        padding: 2em;
+        margin: 2em 0;
+        width: 100%;
+        background:#203A43;
+        word-break: break-all;
+        color: white;        
+    }  
+
+</style>
+<script src="bundle.js"></script>
+<script>
+    function OnInput() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    }
+    function randomClassName(original) {
+        var myArray = ["dark-bg", "red-bg", "blue-bg", "wow-bg"]
+        myArray.splice(myArray.indexOf(original), 1)       
+        console.log(myArray) 
+        return myArray[Math.floor(Math.random() * myArray.length)]        
+    }
+    document.body.className = randomClassName()
+    document.querySelectorAll('.action').forEach((button)=>{
+        button.addEventListener('click', function (e) {
+            // action setup
+            e.preventDefault();
+            let msg = document.querySelector('#msg').value
+            let pass = document.querySelector('#passphrase').value
+            encryptor = require('simple-encryptor')(pass)
+            let result
+            // handle encrypt/decrypt clicks
+            if (e.target.innerText === 'Encrypt') {
+                result = encryptor.encrypt(msg)
+                document.querySelector('#result').value = result
+            } else if (e.target.innerText === 'Decrypt') {
+                result = encryptor.decrypt(msg)
+            }
+
+            // result print
+            document.querySelector('#result').value = result
+            var tx = document.getElementsByTagName('textarea');
+            console.log(tx.length)
+            for (var i = 0; i < tx.length; i++) {
+                tx[i].setAttribute('style', 'height:' + (tx[i].scrollHeight) + 'px;overflow-y:hidden;');
+                tx[i].addEventListener("input", OnInput, false);
+            }
+            // fun, change colors
+            document.body.className = randomClassName(document.body.className)
+        })
+    })
+
+    // copy button
+    document.querySelector('.copy-button').addEventListener('click', function (e) {
+            e.preventDefault();
+            document.getElementById('result').select()
+            document.execCommand("copy");
+    })    
+</script>
